@@ -24,9 +24,9 @@ void* _prepare_for_push(void** result, size_t item_size) {
     size_t capacity;
     if (given_ptr == NULL) {
         capacity = _VEC_INITIAL_CAPACITY;
-    } else if (len(given_ptr) == cap(given_ptr)) {
-        capacity = cap(given_ptr)*_VEC_GROWTH_FACTOR;
-        if (capacity / _VEC_GROWTH_FACTOR != cap(given_ptr)) {
+    } else if (_valid_len(given_ptr) == _valid_cap(given_ptr)) {
+        capacity = _valid_cap(given_ptr)*_VEC_GROWTH_FACTOR;
+        if (capacity / _VEC_GROWTH_FACTOR != _valid_cap(given_ptr)) {
             // Overflow
             return NULL;
         }
