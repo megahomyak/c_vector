@@ -9,9 +9,15 @@ vec - len,cap,[data]
 #define _VEC_GROWTH_FACTOR 2
 #define _VEC_INITIAL_CAPACITY 8
 #define _valid_len(ptr) ((size_t*)ptr)[-2]
-#define len(ptr) (ptr == NULL ? 0 : _valid_len(ptr))
 #define _valid_cap(ptr) ((size_t*)ptr)[-1]
-#define cap(ptr) (ptr == NULL ? 0 : _valid_cap(ptr))
+
+size_t len(void* ptr) {
+    return ptr == NULL ? 0 : _valid_len(ptr);
+}
+
+size_t cap(void* ptr) {
+    return ptr == NULL ? 0 : _valid_cap(ptr);
+}
 
 void* _prepare_for_push(void** result, size_t item_size) {
     void* given_ptr = *result;
@@ -52,6 +58,7 @@ void* _prepare_for_push(void** result, size_t item_size) {
     }
     return alloc_ptr;
 }
+
 void dealloc_vec(void* ptr) {
     if (ptr != NULL) free(ptr - _VEC_DATA_BIAS);
 }
