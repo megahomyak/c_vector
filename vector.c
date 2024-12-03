@@ -13,7 +13,8 @@ vec - len,cap,[data]
 #define _valid_cap(ptr) ((size_t*)ptr)[-1]
 #define cap(ptr) (ptr == NULL ? 0 : _valid_cap(ptr))
 
-void* _grow(void* given_ptr, size_t item_size, void** result) {
+void* _prepare_for_push(void** result, size_t item_size) {
+    void* given_ptr = *result;
     size_t capacity;
     if (given_ptr == NULL) {
         capacity = _VEC_INITIAL_CAPACITY;
@@ -24,7 +25,7 @@ void* _grow(void* given_ptr, size_t item_size, void** result) {
             return NULL;
         }
     } else {
-        // Everything is fine for now, no need to allocate
+        // Everything is fine for now, no need to reallocate
         return given_ptr;
     }
     size_t data_size = item_size * capacity;
@@ -55,6 +56,6 @@ void dealloc_vec(void* ptr) {
     if (ptr != NULL) free(ptr - _VEC_DATA_BIAS);
 }
 
-#define push(ptr, value) (_grow(ptr, sizeof(*ptr), (void**)&ptr) == NULL ? NULL : ((ptr[_valid_len(ptr)++] = value), ptr))
+#define push(ptr, value) (_prepare_for_push((void**)&ptr, sizeof(*ptr)) == NULL ? NULL : ((ptr[_valid_len(ptr)++] = value), ptr))
 #define pop(ptr) ptr[(_valid_len(ptr)--) - 1]
 #define EMPTY_VEC NULL
