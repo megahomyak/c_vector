@@ -63,17 +63,18 @@ void dealloc_vec(void* ptr) {
 #define vec() NULL
 
 int main(void) {
+#define print(format, value) printf(#value " = " format "\n", value)
     int* a = vec();
     push(a, 5);
     push(a, 15);
-    printf("%d\n", a[0]);
-    printf("%d\n", a[1]);
-    printf("%zu\n", cap(a));
-    printf("%zu\n", len(a));
-    printf("%d\n", pop(a));
-    printf("%d\n", pop(a));
-    printf("%zu\n", cap(a));
-    printf("%zu\n", len(a));
+    print("%d", a[0]);
+    print("%d", a[1]);
+    print("%zu", cap(a));
+    print("%zu", len(a));
+    print("%d", pop(a));
+    print("%d", pop(a));
+    print("%zu", cap(a));
+    print("%zu", len(a));
     dealloc_vec(a);
     return 0;
 }
