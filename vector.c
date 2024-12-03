@@ -56,7 +56,7 @@ void* _grow(void* given_ptr, size_t item_size, void** result) {
     return alloc_ptr;
 }
 void dealloc_vec(void* ptr) {
-    if (ptr != NULL) free(ptr - sizeof(size_t) - sizeof(size_t));
+    if (ptr != NULL) free(ptr - _VEC_DATA_BIAS);
 }
 
 #define push(ptr, value) (_grow(ptr, sizeof(*ptr), (void**)&ptr) == NULL ? NULL : ((ptr[_valid_len(ptr)++] = value), ptr))
