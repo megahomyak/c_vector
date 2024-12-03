@@ -8,7 +8,6 @@ get = ptr[i]
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 
 #define _VEC_BIAS (sizeof(size_t)*2)
 #define _valid_len(ptr) ((size_t*)ptr)[-2]
@@ -16,36 +15,50 @@ get = ptr[i]
 #define _valid_cap(ptr) ((size_t*)ptr)[-1]
 #define cap(ptr) (ptr == NULL ? 0 : _valid_cap(ptr))
 
-// Should return new ptr; grows by at least 1
-void* _try_grow(void* ptr, size_t item_size) {
-    size_t item_count;
-    if (ptr == NULL) {
-        item_count = 0;
-    } else if (len(ptr) == cap(ptr)) {
-        item_count = cap(ptr)*2;
-        if (item_count / 2 != cap(ptr)) {
+void* _grow(void* given_ptr, size_t item_size, void** result) {
+    size_t capacity;
+    if (given_ptr == NULL) {
+        capacity = 8;
+    } else if (len(given_ptr) == cap(given_ptr)) {
+        size_t GROWTH_FACTOR = 2;
+        capacity = cap(given_ptr)*GROWTH_FACTOR;
+        if (capacity / GROWTH_FACTOR != cap(given_ptr)) {
             // Overflow
             return NULL;
         }
     } else {
-        return ptr;
+        // Everything is fine for now, no need to allocate
+        return given_ptr;
     }
-    size_t total_size = item_size * item_count;
-    if (total_size / item_size != item_count) {
+    size_t data_size = item_size * capacity;
+    if (data_size / item_size != capacity) {
         // Overflow
         return NULL;
-    } else {
-        // No overflow
-        _valid_len(ptr)++;
-        _valid_cap(ptr) = item_count;
-        return realloc(ptr - _VEC_BIAS, total_size) + _VEC_BIAS;
     }
+    size_t total_size = data_size + _VEC_BIAS;
+    if (total_size <= data_size) {
+        // Overflow
+        return NULL;
+    }
+    if (given_ptr != NULL) {
+        given_ptr -= _VEC_BIAS;
+    }
+    void* alloc_ptr = realloc(given_ptr, total_size);
+    if (alloc_ptr != NULL) {
+        alloc_ptr += _VEC_BIAS;
+        if (given_ptr == NULL) {
+            _valid_len(alloc_ptr) = 0;
+        }
+        _valid_cap(alloc_ptr) = capacity;
+        *result = alloc_ptr;
+    }
+    return alloc_ptr;
 }
 void dealloc_vec(void* ptr) {
     if (ptr != NULL) free(ptr - sizeof(size_t) - sizeof(size_t));
 }
 
-#define push(ptr, value) ((ptr = _try_grow(ptr, sizeof(*ptr))) == NULL ? NULL : (ptr[len(ptr)] = value, ptr))
+#define push(ptr, value) (_grow(ptr, sizeof(*ptr), (void**)&ptr) == NULL ? NULL : ((ptr[_valid_len(ptr)++] = value), ptr))
 #define pop(ptr) ptr[(_valid_len(ptr)--) - 1]
 #define vec() NULL
 
