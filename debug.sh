@@ -1,3 +1,3 @@
 #!/usr/bin/sh
 
-gcc vector.c -o a.o -g && { gdb a.o; rm a.o; }
+gcc usage.c -o a.o -g && { gdb a.o; rm a.o; }
