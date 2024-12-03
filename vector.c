@@ -5,9 +5,9 @@ vec - len,cap,[data]
 #include <stdio.h>
 #include <stdlib.h>
 
-#define _VEC_DATA_BIAS (sizeof(size_t)*2)
-#define _VEC_GROWTH_FACTOR 2
-#define _VEC_INITIAL_CAPACITY 8
+static const size_t _VEC_DATA_BIAS = sizeof(size_t)*2;
+static const size_t _VEC_GROWTH_FACTOR = 2;
+static const size_t _VEC_INITIAL_CAPACITY = 8;
 #define _valid_len(ptr) ((size_t*)ptr)[-2]
 #define _valid_cap(ptr) ((size_t*)ptr)[-1]
 
